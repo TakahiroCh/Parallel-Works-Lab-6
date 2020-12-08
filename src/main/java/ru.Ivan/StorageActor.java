@@ -16,9 +16,11 @@ public class StorageActor extends AbstractActor {
         return receiveBuilder()
                 .match(StoreServer.class, mes -> this.servers = mes.getServers())
                 .match(NextServer.class, mes -> {
+                    this.servers.add(mes.getUrl());
+                })
+                .match(RandomServer.class, mes -> {
                     getSender().tell(this.getRandomServer(), ActorRef.noSender());
                 })
-                .match(DeleteServer.class, mes -> this.servers.remove(mes.getServer()))
                 .build();
     }
 
