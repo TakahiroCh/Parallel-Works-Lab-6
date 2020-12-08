@@ -8,6 +8,7 @@ import akka.http.javadsl.Http;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.server.Route;
+import akka.pattern.Patterns;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
 import org.apache.zookeeper.KeeperException;
@@ -16,6 +17,8 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.concurrent.CompletionStage;
 
 import static akka.http.javadsl.server.Directives.*;
 
@@ -25,7 +28,8 @@ public class Server {
     final private static String LOCAL_HOST = "localhost";
     final private static String PORT = "8080";
     final private static String URL = "url";
-    final private static String COUNT = "COUNT"
+    final private static String COUNT = "COUNT";
+    final private static int TIME_OUT_SEC = 5;
 
     public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
         ActorSystem system = ActorSystem.create("routes");
@@ -41,17 +45,40 @@ public class Server {
         ZooServer server = new ZooServer(zoo, storage);
         server.createServer(LOCAL_HOST, PORT);
 
-        final Flow<HttpRequest, HttpResponse, NotUsed> flow = createRoute()
+        final Flow<HttpRequest, HttpResponse, NotUsed> flow = createRoute(storage, http)
+                .flow(system, materializer);
+
 
     }
 
-    private Route createRoute() {
+    private static CompletionStage<HttpResponse> singleRequest(final Http http, String url) {
+        return http.singleRequest(HttpRequest.create(url));
+    }
+
+    private static Route check(ActorRef storage, final Http http,Request request) {
+        if (request.getCount() == 0) {
+            return completeWithFuture(singleRequest(http, request.getUrl()));
+        } else {
+            request.countMinus();
+            return completeWithFuture(
+                    Patterns.ask(storage, new RandomServer(), Duration.ofSeconds(TIME_OUT_SEC))
+                    .thenApply(req -> (String) req)
+                    .thenCompose(req -> {
+                        String singleRequestURL = "https://" + req + "/?url=" +
+                                request.getUrl() + "&count=" + request.getCount();
+                        return singleRequest(http, singleRequestURL);
+                    })
+            );
+        }
+    }
+
+    private static Route createRoute(ActorRef storage, final Http http) {
         return route(pathSingleSlash(() -> {
             parameter(URL, url -> {
                 parameter(COUNT, count -> {
-                    check(new Request(url, count));
+                    check(storage, http, new Request(url, count));
                 })
             })
-        }))
+        }));
     }
 }
