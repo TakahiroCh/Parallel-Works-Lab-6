@@ -1,15 +1,16 @@
 package ru.Ivan;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StoreServer {
-    private ArrayList<String> servers;
+    private List<String> servers;
 
-    StoreServer(ArrayList<String> servers) {
+    StoreServer(List<String> servers) {
         this.servers = servers;
     }
 
-    public ArrayList<String> getServers() {
+    public List<String> getServers() {
         return this.servers;
     }
 
