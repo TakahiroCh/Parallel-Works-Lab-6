@@ -1,2 +1,4 @@
-package ru.Ivan;public class RandomServer {
+package ru.Ivan;
+
+public class RandomServer {
 }
