@@ -13,6 +13,7 @@ import akka.http.javadsl.server.Route;
 import akka.pattern.Patterns;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -34,6 +35,7 @@ public class Server {
     final private static int TIME_OUT_SEC = 5;
 
     public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
+        BasicConfigurator.configure();
         ActorSystem system = ActorSystem.create("routes");
         ActorRef storage = system.actorOf(Props.create(StorageActor.class));
         final ActorMaterializer materializer = ActorMaterializer.create(system);
