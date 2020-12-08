@@ -56,6 +56,7 @@ public class Server {
                 materializer
         );
 
+        System.out.println("Server online at http://" + LOCAL_HOST + ":" + PORT + "/\nPress RETURN to stop...");
         
 
     }
