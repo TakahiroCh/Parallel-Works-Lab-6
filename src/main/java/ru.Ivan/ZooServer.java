@@ -14,15 +14,16 @@ public class ZooServer implements Watcher {
     private ZooKeeper zoo;
     private ActorRef storage;
 
-    public ZooServer(ZooKeeper zoo, ActorRef storage) {
+    public ZooServer(ZooKeeper zoo, ActorRef storage) throws KeeperException, InterruptedException {
         this.zoo = zoo;
         this.storage = storage;
+        sendServers();
     }
 
 
     private void sendServers() throws KeeperException, InterruptedException {
         List<String> servers = zoo.getChildren(SERVERS, this);
-        storage.tell(new StorageActor(servers), ActorRef.noSender());
+        storage.tell(new StoreServer(servers), ActorRef.noSender());
     }
 
 
