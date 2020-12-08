@@ -1,13 +1,15 @@
 package ru.Ivan;
 
 import akka.actor.ActorRef;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.List;
 
-public class ZooServer {
+public class ZooServer implements Watcher {
     final private static String SERVERS = "/servers";
     private ZooKeeper zoo;
     private ActorRef storage;
@@ -19,12 +21,14 @@ public class ZooServer {
 
     private void watch(WatchEvent watchEvent) {
         System.out.println(watchEvent.toString());
-        ArrayList<String> servers =
-            this.zoo
-                .getChildren(SERVERS,this)
-                .stream(s -> SERVERS + "/" + s)
-                .collect(Collectors.toList());
-        this.storage.tell(new StorageActor());
+
     }
+
+    private void sendServers() throws KeeperException, InterruptedException {
+        List<String> servers = zoo.getChildren(SERVERS, this);
+        storage.tell(new StorageActor(servers), ActorRef.noSender());
+    }
+
+
 
 }
