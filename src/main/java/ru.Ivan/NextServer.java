@@ -1,2 +1,4 @@
-package ru.Ivan;public class NextServer {
+package ru.Ivan;
+
+public class NextServer {
 }
