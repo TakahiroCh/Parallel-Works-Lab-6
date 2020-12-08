@@ -19,10 +19,6 @@ public class ZooServer implements Watcher {
         this.storage = storage;
     }
 
-    private void watch(WatchEvent watchEvent) {
-        System.out.println(watchEvent.toString());
-
-    }
 
     private void sendServers() throws KeeperException, InterruptedException {
         List<String> servers = zoo.getChildren(SERVERS, this);
@@ -32,6 +28,11 @@ public class ZooServer implements Watcher {
 
     @Override
     public void process(WatchedEvent watchedEvent) {
-
+        System.out.println(watchedEvent.toString());
+        try {
+            sendServers();
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
