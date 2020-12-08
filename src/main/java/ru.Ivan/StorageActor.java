@@ -3,11 +3,11 @@ package ru.Ivan;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class StorageActor extends AbstractActor {
-    private ArrayList<String> servers;
+    private List<String> servers;
     private Random random = new Random();
 
 

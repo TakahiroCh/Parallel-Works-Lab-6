@@ -6,7 +6,6 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.nio.file.WatchEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ZooServer implements Watcher {
