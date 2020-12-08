@@ -86,12 +86,12 @@ public class Server {
     }
 
     private static Route createRoute(ActorRef storage, final Http http) {
-        return route(pathSingleSlash(() -> {
-            parameter(URL, url -> {
-                parameter(COUNT, count -> {
-                    check(storage, http, new Request(url, count));
-                })
-            })
-        }));
+        return route(pathSingleSlash(() ->
+            parameter(URL, url ->
+                parameter(COUNT, count ->
+                    check(storage, http, new Request(url, count))
+                )
+            )
+        ));
     }
 }
