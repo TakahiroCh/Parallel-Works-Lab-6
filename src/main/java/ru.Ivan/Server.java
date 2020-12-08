@@ -57,7 +57,10 @@ public class Server {
         );
 
         System.out.println("Server online at http://" + LOCAL_HOST + ":" + PORT + "/\nPress RETURN to stop...");
-        
+        System.in.read();
+        binding
+                .thenCompose(ServerBinding::unbind)
+                .thenAccept(unbound -> system.terminate());
 
     }
 
